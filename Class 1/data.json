@@ -4,6 +4,21 @@
             "id": 1,
             "username": "noman",
             "password": "12345"
+        },
+        {
+            "id": 2,
+            "username": "asad",
+            "password": "44444"
+        },
+        {
+            "id": 3,
+            "username": "Huzaifa",
+            "password": "55555"
+        },
+        {
+            "id": 4,
+            "username": "Jamsheed",
+            "password": "77777"
         }
     ]
 }
