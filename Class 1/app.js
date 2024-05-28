@@ -2,6 +2,7 @@ const http = require('http')
 const queryString = require('node:querystring')
 const fs = require('fs')
 const path = require('path')
+const bcrypt = require('bcrypt');
 
 const PORT = 5000
 const filePath = path.join(process.cwd(), 'data.json')
@@ -82,23 +83,33 @@ const Server = http.createServer((req, res) => {
                             return
                         }
                         const jsondata = JSON.parse(fileData);
-                        console.log("json data ==>", jsondata);
-                        const NewUser = {
-                            id: jsondata.users.length + 1,
-                            username: parse.username,
-                            password: parse.password
-                        }
 
-                        jsondata.users.push(NewUser)
-
-                        fs.writeFile(filePath, JSON.stringify(jsondata, null, 2), (err) => {
+                        const saltRounds = 10;
+                        bcrypt.hash(parse.password, saltRounds, function (err, hash) {
                             if (err) {
-                                console.log("JsonData--->", err)
+                                console.log("bcrypt hash err---->", err);
+                                res.end('<h1>Error hashing password!</h1>');
+                                return;
                             }
-                            else {
-                                res.end('<h1>SignUp Successfully!</h1>')
-                                return
+
+                            console.log("json data ==>", jsondata);
+                            const NewUser = {
+                                id: jsondata.users.length + 1,
+                                username: parse.username,
+                                password: hash
                             }
+
+                            jsondata.users.push(NewUser)
+
+                            fs.writeFile(filePath, JSON.stringify(jsondata, null, 2), (err) => {
+                                if (err) {
+                                    console.log("JsonData--->", err)
+                                }
+                                else {
+                                    res.end('<h1>SignUp Successfully!</h1>')
+                                    return
+                                }
+                            })
                         })
                     })
                 } else {
