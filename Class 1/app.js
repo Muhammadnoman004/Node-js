@@ -29,16 +29,29 @@ const Server = http.createServer((req, res) => {
         })
         req.on('end', () => {
             const parsedData = queryString.parse(data)
+            // console.log("parseData----->", parsedData);
             fs.readFile(filePath, (err, data) => {
+                console.log("data--->", data.toString());
+                const json = JSON.parse(data)
+
                 if (err) {
                     console.log("Error's reading file", err);
                 }
                 else {
-                    console.log('data--->', data);
+                    console.log('json--->', json);
+                    const filter = json.users.filter((user) => user.username == parsedData.username)
+                    console.log("User mil gay---->", filter);
+                    if (filter) {
+                        res.end("login successfully")
+                        return
+                    }
+                    else {
+                        res.end("invalid credential!")
+                    }
                 }
             })
-            res.write('Success')
-            res.end()
+            // res.write('Success')
+            // res.end()
         })
         return
     }
@@ -60,35 +73,41 @@ const Server = http.createServer((req, res) => {
         })
         req.on('end', () => {
             let parse = queryString.parse(data)
-            if (parse.password == parse.confirm_password) {
-                fs.readFile(filePath, (err, fileData) => {
-                    if (err) {
-                        console.log("singnUp err---->", err);
-                        return
-                    }
-                    const jsondata = JSON.parse(fileData);
-                    console.log("json data ==>", jsondata);
-                    const NewUser = {
-                        id: jsondata.users.length + 1,
-                        username: parse.username,
-                        password: parse.password
-                    }
+            if (parse.username && parse.password) {
 
-                    jsondata.users.push(NewUser)
-
-                    fs.writeFile(filePath, JSON.stringify(jsondata, null, 2), (err) => {
+                if (parse.password == parse.confirm_password) {
+                    fs.readFile(filePath, (err, fileData) => {
                         if (err) {
-                            console.log("JsonData--->", err)
-                        }
-                        else {
-                            res.end('<h1>SignUp Successfully!</h1>')
+                            console.log("singnUp err---->", err);
                             return
                         }
+                        const jsondata = JSON.parse(fileData);
+                        console.log("json data ==>", jsondata);
+                        const NewUser = {
+                            id: jsondata.users.length + 1,
+                            username: parse.username,
+                            password: parse.password
+                        }
+
+                        jsondata.users.push(NewUser)
+
+                        fs.writeFile(filePath, JSON.stringify(jsondata, null, 2), (err) => {
+                            if (err) {
+                                console.log("JsonData--->", err)
+                            }
+                            else {
+                                res.end('<h1>SignUp Successfully!</h1>')
+                                return
+                            }
+                        })
                     })
-                })
+                } else {
+                    res.end("<h1>Please Confirm Password!</h1>")
+                    return
+                }
             }
             else {
-                res.end("<h1>Please Confirm Password!</h1>")
+                res.end("<h1>Please fill the form!</h1>")
                 return
             }
         })
