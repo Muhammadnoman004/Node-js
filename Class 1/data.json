@@ -14,6 +14,11 @@
             "id": 3,
             "username": "Jamsheed khan",
             "password": "$2b$10$C.xZ16V9UVgB1sx6PLh0V.Tj4pYPXA7/kTNdGbBsnVZdntf6oFEue"
+        },
+        {
+            "id": 4,
+            "username": "asad",
+            "password": "$2b$10$qkVXiB5j6cw3gnuluKXelucTV12RrZPH3/YjvmK8L1opScPy25D5y"
         }
     ]
 }

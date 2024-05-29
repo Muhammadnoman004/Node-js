@@ -30,8 +30,7 @@ const Server = http.createServer((req, res) => {
         })
         req.on('end', () => {
             const parsedData = queryString.parse(data)
-            // console.log("parseData----->", parsedData);
-            fs.readFile(filePath, (err, data) => {
+            fs.readFile(filePath, async (err, data) => {
                 console.log("data--->", data.toString());
                 const json = JSON.parse(data)
 
@@ -40,10 +39,13 @@ const Server = http.createServer((req, res) => {
                 }
                 else {
                     console.log('json--->', json);
+
                     const filter = json.users.filter((user) => user.username == parsedData.username)
-                    console.log("User mil gay---->", filter);
-                    if (filter) {
-                        res.end("login successfully")
+                    const compareUser = await bcrypt.compare(parsedData.password, filter[0].password)
+
+                    console.log("User mil gay---->", compareUser);
+                    if (compareUser) {
+                        res.end("<h1>Home Pages!</h1>")
                         return
                     }
                     else {
@@ -51,8 +53,6 @@ const Server = http.createServer((req, res) => {
                     }
                 }
             })
-            // res.write('Success')
-            // res.end()
         })
         return
     }
